@@ -142,7 +142,7 @@ export function auditURL(rawUrl = '') {
     };
   }
 
-  const { hostname, tld, subdomains, mainDomain } = parseDomainParts(rawUrl);
+  const { hostname, tld, subdomains, mainDomain, pathname } = parseDomainParts(rawUrl);
   const flags = [];
   let riskScore = 0;
 
@@ -254,7 +254,7 @@ export function auditURL(rawUrl = '') {
   });
 
   if (closestMatch) {
-    riskScore += 50;
+    riskScore += 55;
     flags.push({
       type: 'TYPOSQUATTING',
       severity: 'CRITICAL',
@@ -262,15 +262,19 @@ export function auditURL(rawUrl = '') {
     });
   }
 
-  // 6. Suspicious Keyword Combinations inside URL (kyc, verify, otp, reward, power)
-  const suspiciousKeywords = ['kyc', 'pan', 'reward', 'refund', 'yono', 'otp', 'bill', 'update', 'login', 'secure', 'bonus'];
-  const matchedKeywords = suspiciousKeywords.filter((kw) => hostname.includes(kw));
+  // 6. Suspicious Keyword Combinations inside URL (kyc, verify, otp, reward, power, work, earn)
+  const fullTargetString = (hostname + ' ' + (pathname || '')).toLowerCase();
+  const suspiciousKeywords = [
+    'kyc', 'pan', 'reward', 'refund', 'yono', 'otp', 'bill', 'update',
+    'login', 'secure', 'bonus', 'earn', 'work', 'task', 'telegram', 'claim', 'verify'
+  ];
+  const matchedKeywords = suspiciousKeywords.filter((kw) => fullTargetString.includes(kw));
   if (matchedKeywords.length > 0) {
-    riskScore += matchedKeywords.length * 15;
+    riskScore += Math.min(45, matchedKeywords.length * 15);
     flags.push({
       type: 'PHISHING_KEYWORDS',
       severity: 'MEDIUM',
-      text: `Phishing lure keywords found in domain: [${matchedKeywords.join(', ')}]`
+      text: `Phishing lure keywords found in URL target: [${matchedKeywords.join(', ')}]`
     });
   }
 

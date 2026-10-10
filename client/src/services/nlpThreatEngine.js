@@ -12,8 +12,10 @@ const URGENCY_PATTERNS = [
   { pattern: /\b(disconnected|disconnect|cut off|cut power|electricity cut)\b/i, weight: 35, label: 'Essential Utility Cutoff Threat' },
   { pattern: /\b(suspended|blocked|freeze|frozen|deactivated|terminated)\b/i, weight: 30, label: 'Account Suspension Threat' },
   { pattern: /\b(legal action|police complaint|arrest warrant|court notice|cbi|fir)\b/i, weight: 40, label: 'Law Enforcement Extortion' },
-  { pattern: /(बिजली काट|तुरंत भरें|खाता बंद|कार्रवाई|कनेक्शन काट)/i, weight: 35, label: 'Hindi High-Urgency Cue' },
-  { pattern: /\b(turant|aaj raat|block ho jayega|kat diya jayega|aakhri mauka)\b/i, weight: 30, label: 'Hinglish Panic Cue' }
+  { pattern: /(?:बिजली|कनेक्शन|पावर).*?(?:काट|बंद|कटेगा)|(?:काट दिया जाएगा)|(?:बिजली बिल)|(?:खाता बंद|कार्रवाई)|(?:तुरंत भरें|तुरंत संपर्क)/i, weight: 40, label: 'Hindi High-Urgency Utility Extortion Cue' },
+  { pattern: /(?:आज रात|9:30 बजे|कल सुबह|आज शाम)/i, weight: 25, label: 'Hindi Same-Day Deadline Trigger' },
+  { pattern: /(?:बिजली अधिकारी|पावर ऑफिसर|तुरंत कॉल करें|हेल्पलाइन|संपर्क करें)/i, weight: 25, label: 'Hindi Coercive Helpline Call Cue' },
+  { pattern: /\b(turant|aaj raat|block ho jayega|kat diya jayega|aakhri mauka|bijli kat)\b/i, weight: 30, label: 'Hinglish Panic Cue' }
 ];
 
 // Financial Lures & Extortion Cues
