@@ -28,6 +28,11 @@ const SUSPICIOUS_TLDS = new Set([
   'online', 'ru', 'cn', 'cc', 'link', 'vip', 'monster', 'rest', 'live'
 ]);
 
+// URL Shortener Domains
+const SHORTENER_DOMAINS = new Set([
+  'bit.ly', 'tinyurl.com', 't.co', 'is.gd', 'rb.gy', 'cutt.ly', 'shorturl.at', 'ow.ly'
+]);
+
 /**
  * Calculate Levenshtein Distance between two strings
  */
@@ -159,7 +164,38 @@ export function auditURL(rawUrl = '') {
     };
   }
 
-  // 2. High-Risk TLD Check
+  // 2. Insecure Scheme Check (HTTP instead of HTTPS)
+  if (/^http:\/\//i.test(rawUrl.trim())) {
+    riskScore += 15;
+    flags.push({
+      type: 'INSECURE_SCHEME',
+      severity: 'LOW',
+      text: 'Unencrypted plain HTTP protocol. Legitimate banking and authentication portals mandate HTTPS encryption.'
+    });
+  }
+
+  // 3. Raw IP-Literal Hostname Check
+  const IP_LITERAL_REGEX = /^(?:\d{1,3}\.){3}\d{1,3}$/;
+  if (IP_LITERAL_REGEX.test(hostname)) {
+    riskScore += 45;
+    flags.push({
+      type: 'IP_LITERAL',
+      severity: 'HIGH',
+      text: 'Raw IP address used instead of registered domain. Legitimate banking portals never host customer authentication on raw IP addresses.'
+    });
+  }
+
+  // 4. URL Shortener Check
+  if (SHORTENER_DOMAINS.has(hostname)) {
+    riskScore += 35;
+    flags.push({
+      type: 'URL_SHORTENER',
+      severity: 'HIGH',
+      text: 'URL shortener service detected. Conceals destination address; commonly used to evade domain inspection filters.'
+    });
+  }
+
+  // 5. High-Risk TLD Check
   if (SUSPICIOUS_TLDS.has(tld)) {
     riskScore += 35;
     flags.push({

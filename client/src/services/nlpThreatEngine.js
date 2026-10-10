@@ -18,6 +18,8 @@ const URGENCY_PATTERNS = [
 
 // Financial Lures & Extortion Cues
 const FINANCIAL_LURE_PATTERNS = [
+  { pattern: /\b(share (?:the |your )?otp|send (?:the |your )?otp|tell (?:us )?otp|provide (?:the |your )?otp|forward (?:the )?otp)\b/i, weight: 45, label: 'Credential / OTP Extraction Solicitation' },
+  { pattern: /\b(gift cards?|apple gift card|amazon gift card|steam card)\b/i, weight: 35, label: 'Gift Card Payment Extortion' },
   { pattern: /\b(kyc expired|kyc update|pan link|pan update|aadhaar link)\b/i, weight: 30, label: 'Fake KYC / PAN Verification Trap' },
   { pattern: /\b(lottery|won \u20B9?[\d,]+|cashback|refund of \u20B9?[\d,]+|unclaimed)\b/i, weight: 35, label: 'Financial Lottery / Cashback Bait' },
   { pattern: /\b(claim now|credited to your|click to receive|scratch card)\b/i, weight: 25, label: 'Unverified Money Credit Lure' },
@@ -125,6 +127,21 @@ export function analyzeMessageNLP(text = '') {
       label: `External Web Link Included in Message (${extractedLinks.length} links)`,
       weight: 15
     });
+  }
+
+  // 5. Defensive Security Advisory Context Check (Zero False Positive Filter)
+  const isDefensiveNotice = /\b(never share (?:your |the )?(?:otp|pin|password|cvv)|do not share (?:your |the )?(?:otp|pin|password|cvv)|don't share (?:your |the )?(?:otp|pin|password|cvv)|(?:bank|we) (?:will )?never ask)\b/i.test(cleanText);
+  if (isDefensiveNotice) {
+    // Filter out falsely triggered OTP extraction solicitation
+    const filteredCues = cuesFound.filter((c) => !c.label.includes('OTP Extraction'));
+    cuesFound.length = 0;
+    cuesFound.push(...filteredCues);
+    cuesFound.unshift({
+      type: 'ADVISORY_NOTICE',
+      label: 'Legitimate Defensive Security Advisory (Advises against credential sharing)',
+      weight: 0
+    });
+    urgencyRawScore = Math.min(urgencyRawScore, 15);
   }
 
   // Normalise score 0-100
