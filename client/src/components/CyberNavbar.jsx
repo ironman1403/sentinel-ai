@@ -27,7 +27,7 @@ export default function CyberNavbar() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-extrabold text-base tracking-tight text-white group-hover:text-red-400 transition">
-                    AegisEdge
+                    Sentinel AI
                   </span>
                   <span className="text-[10px] bg-red-950/80 text-red-400 border border-red-800/80 px-1.5 py-0.5 rounded font-mono font-bold">
                     PS-05

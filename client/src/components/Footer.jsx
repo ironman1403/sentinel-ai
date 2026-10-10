@@ -62,7 +62,7 @@ export default function Footer() {
 
         <div className="flex flex-wrap items-center justify-between text-[11px] text-zinc-500 pt-4 border-t border-zinc-900">
           <span>🏛️ Atmiya Developer Students Club (ADSC) • Atmiya University & KIT</span>
-          <span className="font-mono text-zinc-400">AegisEdge v3.0 • Built for Code Carnival 3.0</span>
+          <span className="font-mono text-zinc-400">Sentinel AI v3.0 • Built for Code Carnival 3.0</span>
         </div>
 
       </div>

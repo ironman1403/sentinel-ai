@@ -24,7 +24,7 @@ export default function FloatingThreatHUD({ result, onNeutralize, onDismiss }) {
           </span>
           <div>
             <h4 className="text-xs font-bold text-red-500 uppercase tracking-wider">
-              AegisEdge On-Device Threat Shield
+              Sentinel AI On-Device Threat Shield
             </h4>
             <span className="text-[10px] text-zinc-400">
               Active Protection • Sub-50ms Local Inspection
